@@ -1,0 +1,58 @@
+[
+    {
+      "id": 1,
+      "question": "Según el coaching ontológico, ¿cuál es el factor principal que determina los resultados que una persona obtiene en su vida?",
+      "options": [
+        "Las circunstancias externas y la suerte.",
+        "La cantidad de conocimiento técnico que posee.",
+        "El 'observador' que la persona es (su forma de interpretar el mundo).",
+        "Su nivel de inteligencia emocional únicamente."
+      ],
+      "correctAnswer": 2
+    },
+    {
+      "id": 2,
+      "question": "En el contexto del lenguaje, la frase 'A partir de hoy, seré una persona más proactiva' es un ejemplo de:",
+      "options": [
+        "Una afirmación (describe un hecho).",
+        "Un juicio (una opinión sobre algo).",
+        "Una declaración (genera una nueva realidad).",
+        "Una petición (un pedido a otro)."
+      ],
+      "correctAnswer": 2
+    },
+    {
+      "id": 3,
+      "question": "Después de ver este vídeo sobre cómo nuestra percepción crea la realidad, ¿qué elemento del modelo OSAR (Observador-Acción-Resultados) se busca transformar para generar cambios profundos?",
+      "options": [
+        "Los Resultados directamente.",
+        "El Sistema o entorno.",
+        "La Acción.",
+        "El Observador."
+      ],
+      "correctAnswer": 3,
+      "videoUrl": "https://www.youtube.com/embed/yM2udvxdtiA?si=7Nz6K_RC_DlntAXY"
+    },
+    {
+      "id": 4,
+      "question": "Un 'quiebre' o 'breakdown' en coaching ontológico se define como:",
+      "options": [
+        "Un fracaso rotundo que debe evitarse a toda costa.",
+        "La interrupción de la transparencia con la que actuamos, abriendo una oportunidad de aprendizaje.",
+        "Una discusión o conflicto con otra persona.",
+        "Un estado de ánimo negativo y permanente."
+      ],
+      "correctAnswer": 1
+    },
+    {
+      "id": 5,
+      "question": "¿Cuáles son los tres dominios primarios y coherentes que constituyen al observador, según esta disciplina?",
+      "options": [
+        "Mente, Alma y Espíritu.",
+        "Pensamientos, Sentimientos y Comportamientos.",
+        "Cuerpo, Emoción y Lenguaje.",
+        "Pasado, Presente y Futuro."
+      ],
+      "correctAnswer": 2
+    }
+  ]
