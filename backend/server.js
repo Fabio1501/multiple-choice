@@ -20,14 +20,15 @@ const corsOptions = {
     }
 };
 
-app.use(cors(corsOptions));
-app.use(express.json());
-
 // Middleware para deshabilitar la caché en las rutas de la API
 const noCache = (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     next();
 };
+
+app.use(cors(corsOptions));
+app.use(express.json());
+
 
 // --- API Endpoints ---
 
