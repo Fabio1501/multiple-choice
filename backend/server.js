@@ -85,34 +85,51 @@ app.get('/api/leaderboard', async (req, res) => {
 app.post('/api/submit', async (req, res) => {
     const { name, answers, time } = req.body;
 
-    if (!name || !answers || time === undefined) {
-        return res.status(400).json({ message: 'Faltan datos en la petición.' });
+    if (!name || !Array.isArray(answers) || time === undefined) {
+        return res.status(400).json({ message: 'Faltan datos o el formato es incorrecto.' });
     }
 
     try {
-        // Obtenemos las preguntas y sus respuestas correctas desde la DB para validar
+        // Obtenemos las preguntas y sus respuestas correctas desde la DB
         const correctAnswersQuery = `
-        SELECT q.id as question_id, o.id as option_id
-        FROM questions q
-        JOIN options o ON q.id = o.question_id
-        WHERE o.is_correct = TRUE
-        ORDER BY q.id;
-    `;
+            SELECT q.id as question_id, o.id as option_id
+            FROM questions q
+            JOIN options o ON q.id = o.question_id
+            WHERE o.is_correct = TRUE
+            ORDER BY q.id;
+        `;
         const correctAnswersResult = await db.query(correctAnswersQuery);
         const correctAnswersMap = correctAnswersResult.rows;
 
         let score = 0;
-        // La respuesta del frontend es un índice (0, 1, 2, 3), necesitamos mapearlo a un option_id
-        for (let i = 0; i < answers.length; i++) {
-            const questionId = correctAnswersMap[i].question_id;
+
+        // Iteramos sobre las respuestas correctas de la DB, que es nuestra "fuente de verdad".
+        // Esto evita el error si el frontend envía más respuestas de las que existen.
+        for (let i = 0; i < correctAnswersMap.length; i++) {
+
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Comprobamos si el frontend proporcionó una respuesta para esta pregunta.
+            // Si el usuario envió menos respuestas, `userAnswerIndex` será undefined, y la condición de abajo fallará de forma segura.
             const userAnswerIndex = answers[i];
+            if (userAnswerIndex === undefined) {
+                continue; // Si no hay respuesta para esta pregunta, simplemente la saltamos.
+            }
 
-            // Obtenemos todas las opciones para la pregunta actual para encontrar el ID de la opción elegida
-            const optionsForQuestion = await db.query('SELECT id FROM options WHERE question_id = $1 ORDER BY id', [questionId]);
-            const userAnswerOptionId = optionsForQuestion.rows[userAnswerIndex].id;
+            const questionId = correctAnswersMap[i].question_id;
+            const correctOptionId = correctAnswersMap[i].option_id;
+            // --- FIN DE LA CORRECCIÓN ---
 
-            if (userAnswerOptionId === correctAnswersMap[i].option_id) {
-                score++;
+            // Obtenemos todas las opciones para la pregunta actual para encontrar el ID de la opción elegida por el usuario
+            const optionsForQuestionResult = await db.query('SELECT id FROM options WHERE question_id = $1 ORDER BY id', [questionId]);
+            const optionsForQuestion = optionsForQuestionResult.rows;
+
+            // Otra comprobación de seguridad: ¿existe la opción que el usuario marcó?
+            if (optionsForQuestion[userAnswerIndex]) {
+                const userAnswerOptionId = optionsForQuestion[userAnswerIndex].id;
+
+                if (userAnswerOptionId === correctOptionId) {
+                    score++;
+                }
             }
         }
 
@@ -123,8 +140,9 @@ app.post('/api/submit', async (req, res) => {
         res.status(201).json({ name, score, time });
 
     } catch (error) {
-        console.error('Error submitting score:', error);
-        res.status(500).json({ message: 'Error al guardar la puntuación.' });
+        // Añadimos un log más detallado para futura depuración
+        console.error('Error detallado en /api/submit:', error);
+        res.status(500).json({ message: 'Error interno al procesar la puntuación.' });
     }
 });
 
