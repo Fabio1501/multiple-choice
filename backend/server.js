@@ -7,7 +7,8 @@ const PORT = process.env.PORT || 3001;
 
 const whitelist = [
     'http://localhost:5173', // Tu entorno de desarrollo
-    'https://multiple-choice-h9hykhwig-fabio1501s-projects.vercel.app' // ¡TU URL DE VERCEL!
+    'https://multiple-choice-h9hykhwig-fabio1501s-projects.vercel.app',
+    'https://multiple-choice-coach.vercel.app'
 ];
 
 const corsOptions = {
