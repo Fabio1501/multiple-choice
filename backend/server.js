@@ -23,10 +23,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Middleware para deshabilitar la caché en las rutas de la API
+const noCache = (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+};
+
 // --- API Endpoints ---
 
 // 1. Endpoint para obtener las preguntas
-app.get('/api/questions', async (req, res) => {
+app.get('/api/questions', noCache, async (req, res) => {
     try {
         const questionsQuery = 'SELECT id, question_text, video_url FROM questions ORDER BY id';
         const optionsQuery = 'SELECT id, question_id, option_text FROM options ORDER BY id';
