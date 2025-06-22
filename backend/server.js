@@ -5,7 +5,22 @@ const db = require('./db'); // Nuestro nuevo módulo de base de datos
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+const whitelist = [
+    'http://localhost:5173', // Tu entorno de desarrollo
+    'https://multiple-choice-h9hykhwig-fabio1501s-projects.vercel.app' // ¡TU URL DE VERCEL!
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // --- API Endpoints ---
