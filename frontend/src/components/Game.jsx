@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Spinner from './common/Spinner';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +14,7 @@ function Game({ user, setUser }) {
 
     // NUEVO: Estado para controlar si el video fue "visto"
     const [isVideoWatched, setIsVideoWatched] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const navigate = useNavigate();
 
@@ -22,8 +24,7 @@ function Game({ user, setUser }) {
                 const response = await axios.get(`${API_URL}/questions`);
                 setQuestions(response.data);
                 setStartTime(Date.now());
-                // Comprobar si la primera pregunta NO tiene video para habilitar las respuestas inmediatamente
-                if (response.data.length > 0 && !response.data[0].videoUrl) {
+                if (response.data.length > 0 && !response.data[0].mediaUrl) { // MODIFICADO: videoUrl -> mediaUrl
                     setIsVideoWatched(true);
                 }
             } catch (error) {
@@ -45,13 +46,14 @@ function Game({ user, setUser }) {
             setCurrentQuestionIndex(nextQuestionIndex);
             // LÓGICA MODIFICADA: Resetear el estado del video para la siguiente pregunta.
             // Si la siguiente pregunta no tiene video, marcamos como "visto" para habilitar las opciones.
-            if (questions[nextQuestionIndex].videoUrl) {
+            if (questions[nextQuestionIndex].mediaUrl) {
                 setIsVideoWatched(false);
             } else {
                 setIsVideoWatched(true);
             }
         } else {
             // Fin del juego
+            setIsSubmitting(true);
             const endTime = Date.now();
             const timeTaken = Math.round((endTime - startTime) / 1000);
 
@@ -65,6 +67,8 @@ function Game({ user, setUser }) {
                 navigate('/results');
             } catch (error) {
                 console.error("Error al enviar los resultados:", error);
+                alert("Hubo un problema al enviar tus resultados. Por favor, inténtalo de nuevo.");
+                setIsSubmitting(false);
             }
         }
     };
@@ -73,24 +77,32 @@ function Game({ user, setUser }) {
     if (questions.length === 0) return <p className="text-xl text-red-400">No se pudieron cargar las preguntas.</p>;
 
     const currentQuestion = questions[currentQuestionIndex];
-    const hasVideo = !!currentQuestion.videoUrl;
+    const hasMedia = !!currentQuestion.mediaUrl;
 
     return (
         <div className="w-full max-w-3xl mx-auto">
             <div className="bg-slate-800 p-6 md:p-8 rounded-lg shadow-2xl">
 
                 {/* RENDERIZADO CONDICIONAL DEL VIDEO */}
-                {hasVideo && (
+                {hasMedia && (
                     <div className="mb-6">
                         <div className="aspect-w-16 aspect-h-9 w-full bg-black rounded-lg overflow-hidden">
-                            {/* Usamos aspect-video de Tailwind para mantener la proporción */}
-                            <iframe
-                                src={currentQuestion.videoUrl}
-                                title="Video de la pregunta"
-                                className="w-full h-full"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
+                            {/* NUEVA LÓGICA DE RENDERIZADO */}
+                            {currentQuestion.mediaType === 'video' ? (
+                                <iframe
+                                    src={currentQuestion.mediaUrl}
+                                    title="Video de la pregunta"
+                                    className="w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            ) : (
+                                <img
+                                    src={`${API_URL}${currentQuestion.mediaUrl}`}
+                                    alt="Media de la pregunta"
+                                    className="w-full h-full object-contain"
+                                />
+                            )}
                         </div>
                         {!isVideoWatched && (
                             <button
@@ -116,14 +128,22 @@ function Game({ user, setUser }) {
                             onClick={() => handleAnswer(index)}
                             disabled={!isVideoWatched} // El botón está deshabilitado si el video no ha sido "visto"
                             className={`w-full p-4 rounded-md text-left transition ${!isVideoWatched
-                                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
-                                    : 'bg-slate-700 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500'
+                                ? 'bg-slate-600 text-slate-400 cursor-not-allowed opacity-50'
+                                : 'bg-slate-700 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500'
                                 }`}
                         >
                             {option}
                         </button>
                     ))}
                 </div>
+                {isSubmitting && (
+                    <div className="fixed inset-0 bg-slate-900 bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-300 animate-fadeIn">
+                        <Spinner
+                            text='"Cuando la transparencia se rompe, el quiebre es una oportunidad con disfraz de obstáculo."'
+                            textColor="italic text-slate-200"
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

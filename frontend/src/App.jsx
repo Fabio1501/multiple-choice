@@ -5,6 +5,10 @@ import Game from './components/Game';
 import Results from './components/Results';
 import Leaderboard from './components/Leaderboard';
 
+import AdminLayout from './components/admin/AdminLayout';
+import AdminQuestions from './components/admin/AdminQuestions';
+import AdminScores from './components/admin/AdminScores';
+
 function App() {
   const [user, setUser] = useState({ name: '', finalScore: null, time: null });
 
@@ -34,6 +38,11 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="questions" />} />
+            <Route path="questions" element={<AdminQuestions />} />
+            <Route path="scores" element={<AdminScores />} />
+          </Route>
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="*" element={<Navigate to="/" />} /> {/* Redirige cualquier ruta no encontrada a la home */}
         </Routes>

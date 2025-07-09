@@ -25,12 +25,12 @@ function Results({ user }) {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link
+                {/* <Link
                     to="/"
                     className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 font-bold py-3 px-6 rounded-md transition"
                 >
                     Jugar de Nuevo
-                </Link>
+                </Link> */}
                 <Link
                     to="/leaderboard"
                     className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 font-bold py-3 px-6 rounded-md transition"
