@@ -109,7 +109,7 @@ function Game({ user, setUser }) {
                                 onClick={() => setIsVideoWatched(true)}
                                 className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 font-bold py-3 px-6 rounded-md transition"
                             >
-                                He visto el vídeo, ¡listo para responder!
+                                He visto la imágen, ¡estoy listo para responder!
                             </button>
                         )}
                     </div>
