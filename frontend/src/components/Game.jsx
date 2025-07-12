@@ -98,7 +98,7 @@ function Game({ user, setUser }) {
                                 ></iframe>
                             ) : (
                                 <img
-                                    src={`${API_URL}${currentQuestion.mediaUrl}`}
+                                    src={`https://cdn-pro.elsalvador.com/wp-content/uploads/2022/10/san-miguel-tormenta-julia-inundaciones.jpg`}
                                     alt="Media de la pregunta"
                                     className="w-full h-full object-contain"
                                 />
